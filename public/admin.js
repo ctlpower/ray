@@ -1108,4 +1108,7 @@ const adminStyles = `
     }
 `;
 
-// Injecter les
+// Injecter les styles d'administration
+const styleSheet = document.createElement('style');
+styleSheet.textContent = adminStyles;
+document.head.appendChild(styleSheet);
