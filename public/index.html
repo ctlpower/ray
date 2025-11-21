@@ -7,22 +7,33 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230096D6'/><circle cx='50' cy='50' r='30' fill='white'/><path d='M40 40L60 50L40 60Z' fill='%230096D6'/></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
-        // Initialisation EmailJS
-        (function() {
-            emailjs.init("4gEzT9DkXPjvp2WxD");
-        })();
-    </script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Promotion Banner -->
+    <div id="promotion-banner" class="promotion-banner" style="display: none;">
+        <div class="container">
+            <div class="promotion-content">
+                <span id="promotion-icon" class="promotion-icon">🎄</span>
+                <span id="promotion-text" class="promotion-text"></span>
+                <button id="promotion-close" class="promotion-close">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Banner -->
+    <div id="maintenance-banner" class="maintenance-banner" style="display: none;">
+        <div class="container">
+            <p id="maintenance-message"></p>
+        </div>
+    </div>
+
     <!-- Header -->
     <header id="header">
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <img id="site-logo" src="data:image/svg+xml,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iNSIgZmlsbD0iIzAwOTZENiIvPgo8Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxMCIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE0IDE0TDI2IDIwTDE0IDI2VjE0WiIgZmlsbD0iIzAwOTZENiIvPgo8L3N2Zz4K" alt="Rayz.com Logo">
+                    <img id="site-logo" src="" alt="Rayz.com Logo">
                     <h1 id="site-name">Rayz.com</h1>
                 </div>
                 <div class="mobile-toggle" id="mobile-toggle">
@@ -33,6 +44,7 @@
                         <li><a href="#home">Accueil</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#projects">Projets</a></li>
+                        <li><a href="#promotions">Promotions</a></li>
                         <li><a href="#about">À propos</a></li>
                         <li><a href="#contact">Contact</a></li>
                         <li><a href="/admin" class="admin-link">Admin</a></li>
@@ -42,21 +54,26 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero Section avec Carousel -->
     <section class="hero" id="home">
-        <div class="container">
-            <div class="hero-content">
-                <h1 id="hero-title">Solutions de Sécurité Innovantes</h1>
-                <p id="hero-description">Rayz.com est votre partenaire de confiance pour l'installation de systèmes de surveillance modernes, Starlink, alarmes et bien plus encore.</p>
-                <div class="hero-btns">
-                    <a href="#services" class="btn btn-primary">Nos Services</a>
-                    <a href="#contact" class="btn btn-secondary">Contact Rapide</a>
-                    <a href="https://api.whatsapp.com/send?phone=+33123456789&text=Bonjour%20Rayz.com%20je%20suis%20intéressé%20par%20vos%20services" 
-                       target="_blank" class="btn btn-whatsapp">
-                        <i class="fab fa-whatsapp"></i> WhatsApp
-                    </a>
+        <div class="hero-carousel" id="hero-carousel">
+            <!-- Les bannières seront chargées dynamiquement ici -->
+        </div>
+        <div class="hero-overlay">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 id="hero-title">Solutions de Sécurité Innovantes</h1>
+                    <p id="hero-description">Rayz.com est votre partenaire de confiance pour l'installation de systèmes de surveillance modernes, Starlink, alarmes et bien plus encore.</p>
+                    <div class="hero-btns">
+                        <a href="#projects" class="btn btn-primary">Voir nos projets</a>
+                        <a href="https://shop.thetic.de" target="_blank" class="btn btn-shop"><i class="fas fa-shopping-cart"></i> Visiter notre boutique</a>
+                        <a href="#" id="whatsapp-btn" class="btn btn-whatsapp" style="display: none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="carousel-indicators" id="carousel-indicators">
+            <!-- Les indicateurs seront générés dynamiquement -->
         </div>
     </section>
 
@@ -73,12 +90,32 @@
         </div>
     </section>
 
+    <!-- Promotions Section -->
+    <section class="section promotions" id="promotions">
+        <div class="container">
+            <div class="section-header">
+                <h2>Promotions Spéciales</h2>
+                <p>Profitez de nos offres exceptionnelles pour sécuriser votre espace</p>
+            </div>
+            <div class="promotions-grid" id="promotions-grid">
+                <!-- Les promotions seront chargées dynamiquement ici -->
+            </div>
+        </div>
+    </section>
+
     <!-- Projects Section -->
     <section class="section projects" id="projects">
         <div class="container">
             <div class="section-header">
                 <h2>Nos Projets</h2>
                 <p>Découvrez nos réalisations récentes en matière de sécurité et de connectivité</p>
+            </div>
+            <div class="projects-filter">
+                <button class="filter-btn active" data-filter="all">Tous</button>
+                <button class="filter-btn" data-filter="surveillance">Surveillance</button>
+                <button class="filter-btn" data-filter="starlink">Starlink</button>
+                <button class="filter-btn" data-filter="alarmes">Alarmes</button>
+                <button class="filter-btn" data-filter="controle">Contrôle d'accès</button>
             </div>
             <div class="projects-grid" id="projects-grid">
                 <!-- Les projets seront chargés dynamiquement ici -->
@@ -91,7 +128,7 @@
         <div class="container">
             <div class="about-content">
                 <div class="about-text">
-                    <h2 id="about-title">À Propos de <span id="about-company-name">Rayz.com</span></h2>
+                    <h2>À Propos de <span id="about-company-name">Rayz.com</span></h2>
                     <p id="about-description">Fondée en 2018, Rayz.com est devenue un leader dans le domaine des solutions de sécurité et de connectivité innovantes. Notre équipe d'experts est passionnée par la création d'environnements plus sûrs et mieux connectés.</p>
                     <div class="about-stats">
                         <div class="stat">
@@ -109,7 +146,7 @@
                     </div>
                 </div>
                 <div class="about-image">
-                    <img src="data:image/svg+xml,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDUwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MDAiIGhlaWdodD0iNDAwIiByeD0iMTUiIGZpbGw9IiNGRkZGRkYiLz4KPHJlY3QgeD0iMjAiIHk9IjIwIiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjM2MCIgcng9IjEwIiBmaWxsPSIjRjhGQUZDIi8+CjxjaXJjbGUgY3g9IjI1MCIgY3k9IjE1MCIgcj0iODAiIGZpbGw9IiMwMDk2RDYiLz4KPHBhdGggZD0iTTIxMCAxNTBMMjUwIDExMEwyOTAgMTUwSDIxMFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOTAgMTUwTDI1MCAxOTBMMjEwIDE1MEgyOTBaIiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIxNTAiIHk9IjI0MCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIxMCIgZmlsbD0iI0U5RTdFRiIvPgo8cmVjdCB4PSIxNzAiIHk9IjI2MCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSI2MCIgcng9IjUiIGZpbGw9IiNGNEY2RjgiLz4KPC9zdmc+Cg==" alt="Équipe Rayz.com">
+                    <img id="about-image" src="" alt="Équipe Rayz.com">
                 </div>
             </div>
         </div>
@@ -155,24 +192,22 @@
                             </div>
                         </div>
                     </div>
-                    <div class="contact-actions">
-                        <a href="https://api.whatsapp.com/send?phone=+33123456789&text=Bonjour%20Rayz.com%20je%20suis%20intéressé%20par%20vos%20services" 
-                           target="_blank" class="btn btn-whatsapp-large">
-                            <i class="fab fa-whatsapp"></i> Contact WhatsApp
-                        </a>
-                        <a href="tel:+33123456789" class="btn btn-call">
-                            <i class="fas fa-phone"></i> Appeler Maintenant
-                        </a>
+                    <div class="social-links">
+                        <a href="#" id="social-facebook" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" id="social-twitter" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" id="social-instagram" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" id="social-linkedin" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" id="social-whatsapp" class="social-link"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
-                            <label for="name">Nom complet *</label>
+                            <label for="name">Nom complet</label>
                             <input type="text" id="name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Adresse email *</label>
+                            <label for="email">Adresse email</label>
                             <input type="email" id="email" class="form-control" required>
                         </div>
                         <div class="form-group">
@@ -191,12 +226,11 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="message">Message *</label>
-                            <textarea id="message" class="form-control" required placeholder="Décrivez votre projet..."></textarea>
+                            <label for="message">Message</label>
+                            <textarea id="message" class="form-control" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> Envoyer le message
-                        </button>
+                        <button type="submit" class="btn btn-primary">Envoyer le message</button>
+                        <a href="https://shop.thetic.de" target="_blank" class="btn btn-shop" style="margin-top: 20px; display: inline-block; width: 100%; text-align: center;"><i class="fas fa-shopping-cart"></i> Visiter notre boutique</a>
                     </form>
                 </div>
             </div>
@@ -210,6 +244,12 @@
                 <div class="footer-col">
                     <h4 id="footer-company-name">Rayz.com</h4>
                     <p id="footer-description">Votre partenaire de confiance pour des solutions de sécurité innovantes et performantes.</p>
+                    <div class="social-links">
+                        <a href="#" id="footer-facebook" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" id="footer-twitter" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" id="footer-instagram" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" id="footer-linkedin" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
                 <div class="footer-col">
                     <h4>Liens rapides</h4>
@@ -217,6 +257,7 @@
                         <li><a href="#home">Accueil</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#projects">Projets</a></li>
+                        <li><a href="#promotions">Promotions</a></li>
                         <li><a href="#about">À propos</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
@@ -224,7 +265,7 @@
                 <div class="footer-col">
                     <h4>Services</h4>
                     <ul class="footer-links" id="footer-services">
-                        <!-- Services chargés dynamiquement -->
+                        <!-- Les services seront chargés dynamiquement ici -->
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -242,7 +283,28 @@
         </div>
     </footer>
 
-    <!-- Script JavaScript -->
-    <script src="/script.js"></script>
+    <!-- Modal pour les projets -->
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Détails du projet</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="project-carousel">
+                    <div class="project-carousel-slide active">
+                        <img id="modal-image" src="" alt="Projet détaillé">
+                        <div class="project-carousel-caption" id="modal-caption"></div>
+                    </div>
+                </div>
+                <div class="project-details">
+                    <h3 id="projectDetailTitle"></h3>
+                    <p id="projectDetailDescription"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
