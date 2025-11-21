@@ -1,39 +1,50 @@
-const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
-const path = require('path');
-const bodyParser = require('body-parser');
-const multer = require('multer');
-const nodemailer = require('nodemailer');
-require('dotenv').config();
+import express from 'express';
+import { createClient } from '@supabase/supabase-js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import nodemailer from 'nodemailer';
+import multer from 'multer';
+import fs from 'fs';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuration Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Configuration Email
-const emailTransporter = nodemailer.createTransporter({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
-
 // Middleware
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuration de multer pour l'upload d'images
-const storage = multer.memoryStorage();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = 'public/uploads/';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
 const upload = multer({ 
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 10 * 1024 * 1024 // 10MB limit
   }
 });
 
@@ -42,234 +53,319 @@ const upload = multer({
 // Récupérer les données du site
 app.get('/api/site-data', async (req, res) => {
   try {
-    const [siteInfo, services, projects, promotions, banners] = await Promise.all([
-      supabase.from('site_info').select('*').eq('id', 1).single(),
-      supabase.from('services').select('*').order('order_index'),
-      supabase.from('projects').select('*').order('created_at', { ascending: false }),
-      supabase.from('promotions').select('*').eq('is_active', true).order('start_date'),
-      supabase.from('banners').select('*').eq('is_active', true).order('order_index')
-    ]);
+    const { data: siteInfo, error: siteError } = await supabase
+      .from('site_info')
+      .select('*')
+      .single();
 
-    res.json({
-      siteInfo: siteInfo.data,
-      services: services.data,
-      projects: projects.data,
-      promotions: promotions.data,
-      banners: banners.data
-    });
-  } catch (error) {
-    console.error('Error fetching site data:', error);
-    res.status(500).json({ error: 'Erreur lors de la récupération des données' });
-  }
-});
+    const { data: services, error: servicesError } = await supabase
+      .from('services')
+      .select('*')
+      .order('order_index');
 
-// Upload d'image vers Supabase Storage
-app.post('/api/upload-image', upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Aucune image fournie' });
+    const { data: projects, error: projectsError } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    const { data: promotions, error: promotionsError } = await supabase
+      .from('promotions')
+      .select('*')
+      .eq('active', true)
+      .order('start_date', { ascending: false });
+
+    const { data: socialLinks, error: socialError } = await supabase
+      .from('social_links')
+      .select('*');
+
+    if (siteError || servicesError || projectsError || promotionsError || socialError) {
+      throw new Error('Erreur lors de la récupération des données');
     }
 
-    const fileName = `images/${Date.now()}-${req.file.originalname}`;
-    const { data, error } = await supabase.storage
-      .from('website-assets')
-      .upload(fileName, req.file.buffer, {
-        contentType: req.file.mimetype,
-        upsert: false
-      });
-
-    if (error) throw error;
-
-    // Récupérer l'URL publique
-    const { data: urlData } = supabase.storage
-      .from('website-assets')
-      .getPublicUrl(fileName);
-
-    res.json({ url: urlData.publicUrl });
+    res.json({
+      siteInfo: siteInfo || {},
+      services: services || [],
+      projects: projects || [],
+      promotions: promotions || [],
+      socialLinks: socialLinks || []
+    });
   } catch (error) {
-    console.error('Error uploading image:', error);
-    res.status(500).json({ error: 'Erreur lors de l\'upload de l\'image' });
+    console.error('Erreur API site-data:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // Mettre à jour les informations du site
 app.post('/api/update-site-info', async (req, res) => {
   try {
+    const { siteInfo } = req.body;
+
     const { data, error } = await supabase
       .from('site_info')
-      .upsert({ id: 1, ...req.body })
-      .select()
-      .single();
+      .upsert({ id: 1, ...siteInfo })
+      .select();
 
     if (error) throw error;
-    res.json({ message: 'Informations mises à jour avec succès', data });
+
+    res.json({ message: 'Informations du site mises à jour avec succès', data: data[0] });
   } catch (error) {
-    console.error('Error updating site info:', error);
-    res.status(500).json({ error: 'Erreur lors de la mise à jour' });
+    console.error('Erreur update site-info:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
 // Gérer les services
-app.post('/api/update-service', async (req, res) => {
+app.get('/api/services', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('services')
-      .upsert(req.body)
-      .select()
-      .single();
+      .select('*')
+      .order('order_index');
 
     if (error) throw error;
-    res.json({ message: 'Service mis à jour avec succès', data });
+    res.json(data);
   } catch (error) {
-    console.error('Error updating service:', error);
-    res.status(500).json({ error: 'Erreur lors de la mise à jour du service' });
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/services', upload.single('image'), async (req, res) => {
+  try {
+    const { title, description, icon, promotion_id, discount } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const { data, error } = await supabase
+      .from('services')
+      .insert([{ title, description, icon, image, promotion_id, discount }])
+      .select();
+
+    if (error) throw error;
+    res.json({ message: 'Service ajouté avec succès', data: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/services/:id', upload.single('image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, icon, promotion_id, discount } = req.body;
+    let updates = { title, description, icon, promotion_id, discount };
+
+    if (req.file) {
+      updates.image = `/uploads/${req.file.filename}`;
+    }
+
+    const { data, error } = await supabase
+      .from('services')
+      .update(updates)
+      .eq('id', id)
+      .select();
+
+    if (error) throw error;
+    res.json({ message: 'Service modifié avec succès', data: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/services/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase.from('services').delete().eq('id', id);
+
+    if (error) throw error;
+    res.json({ message: 'Service supprimé avec succès' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
 // Gérer les projets
-app.post('/api/update-project', upload.single('image'), async (req, res) => {
+app.post('/api/projects', upload.single('image'), async (req, res) => {
   try {
-    let imageUrl = req.body.existing_image;
+    const { title, description, category } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([{ title, description, category, image }])
+      .select();
+
+    if (error) throw error;
+    res.json({ message: 'Projet ajouté avec succès', data: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/projects/:id', upload.single('image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, category } = req.body;
+    let updates = { title, description, category };
 
     if (req.file) {
-      const uploadResult = await supabase.storage
-        .from('website-assets')
-        .upload(`projects/${Date.now()}-${req.file.originalname}`, req.file.buffer, {
-          contentType: req.file.mimetype
-        });
-
-      if (uploadResult.error) throw uploadResult.error;
-
-      const { data: urlData } = supabase.storage
-        .from('website-assets')
-        .getPublicUrl(uploadResult.data.path);
-
-      imageUrl = urlData.publicUrl;
-    }
-
-    const projectData = {
-      ...req.body,
-      image: imageUrl,
-      updated_at: new Date().toISOString()
-    };
-
-    if (!req.body.id) {
-      projectData.created_at = new Date().toISOString();
+      updates.image = `/uploads/${req.file.filename}`;
     }
 
     const { data, error } = await supabase
       .from('projects')
-      .upsert(projectData)
-      .select()
-      .single();
+      .update(updates)
+      .eq('id', id)
+      .select();
 
     if (error) throw error;
-    res.json({ message: 'Projet mis à jour avec succès', data });
+    res.json({ message: 'Projet modifié avec succès', data: data[0] });
   } catch (error) {
-    console.error('Error updating project:', error);
-    res.status(500).json({ error: 'Erreur lors de la mise à jour du projet' });
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/projects/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase.from('projects').delete().eq('id', id);
+
+    if (error) throw error;
+    res.json({ message: 'Projet supprimé avec succès' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
 // Gérer les promotions
-app.post('/api/update-promotion', upload.single('image'), async (req, res) => {
+app.get('/api/promotions', async (req, res) => {
   try {
-    let imageUrl = req.body.existing_image;
+    const { data, error } = await supabase
+      .from('promotions')
+      .select('*')
+      .order('start_date', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/promotions', upload.single('banner_image'), async (req, res) => {
+  try {
+    const { name, description, start_date, end_date, active, animation_class, discount_text } = req.body;
+    const banner_image = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const { data, error } = await supabase
+      .from('promotions')
+      .insert([{ name, description, start_date, end_date, active, animation_class, discount_text, banner_image }])
+      .select();
+
+    if (error) throw error;
+    res.json({ message: 'Promotion ajoutée avec succès', data: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/promotions/:id', upload.single('banner_image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, start_date, end_date, active, animation_class, discount_text } = req.body;
+    let updates = { name, description, start_date, end_date, active, animation_class, discount_text };
 
     if (req.file) {
-      const uploadResult = await supabase.storage
-        .from('website-assets')
-        .upload(`promotions/${Date.now()}-${req.file.originalname}`, req.file.buffer, {
-          contentType: req.file.mimetype
-        });
-
-      if (uploadResult.error) throw uploadResult.error;
-
-      const { data: urlData } = supabase.storage
-        .from('website-assets')
-        .getPublicUrl(uploadResult.data.path);
-
-      imageUrl = urlData.publicUrl;
-    }
-
-    const promotionData = {
-      ...req.body,
-      image: imageUrl,
-      updated_at: new Date().toISOString()
-    };
-
-    if (!req.body.id) {
-      promotionData.created_at = new Date().toISOString();
+      updates.banner_image = `/uploads/${req.file.filename}`;
     }
 
     const { data, error } = await supabase
       .from('promotions')
-      .upsert(promotionData)
-      .select()
-      .single();
+      .update(updates)
+      .eq('id', id)
+      .select();
 
     if (error) throw error;
-    res.json({ message: 'Promotion mise à jour avec succès', data });
+    res.json({ message: 'Promotion modifiée avec succès', data: data[0] });
   } catch (error) {
-    console.error('Error updating promotion:', error);
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de la promotion' });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Gérer les bannières
-app.post('/api/update-banner', upload.single('image'), async (req, res) => {
+app.delete('/api/promotions/:id', async (req, res) => {
   try {
-    let imageUrl = req.body.existing_image;
-
-    if (req.file) {
-      const uploadResult = await supabase.storage
-        .from('website-assets')
-        .upload(`banners/${Date.now()}-${req.file.originalname}`, req.file.buffer, {
-          contentType: req.file.mimetype
-        });
-
-      if (uploadResult.error) throw uploadResult.error;
-
-      const { data: urlData } = supabase.storage
-        .from('website-assets')
-        .getPublicUrl(uploadResult.data.path);
-
-      imageUrl = urlData.publicUrl;
-    }
-
-    const bannerData = {
-      ...req.body,
-      image: imageUrl,
-      updated_at: new Date().toISOString()
-    };
-
-    if (!req.body.id) {
-      bannerData.created_at = new Date().toISOString();
-    }
-
-    const { data, error } = await supabase
-      .from('banners')
-      .upsert(bannerData)
-      .select()
-      .single();
+    const { id } = req.params;
+    const { error } = await supabase.from('promotions').delete().eq('id', id);
 
     if (error) throw error;
-    res.json({ message: 'Bannière mise à jour avec succès', data });
+    res.json({ message: 'Promotion supprimée avec succès' });
   } catch (error) {
-    console.error('Error updating banner:', error);
-    res.status(500).json({ error: 'Erreur lors de la mise à jour de la bannière' });
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Gérer les liens sociaux
+app.post('/api/social-links', async (req, res) => {
+  try {
+    const { platform, url } = req.body;
+
+    const { data, error } = await supabase
+      .from('social_links')
+      .insert([{ platform, url }])
+      .select();
+
+    if (error) throw error;
+    res.json({ message: 'Lien social ajouté avec succès', data: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/api/social-links/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { platform, url } = req.body;
+
+    const { data, error } = await supabase
+      .from('social_links')
+      .update({ platform, url })
+      .eq('id', id)
+      .select();
+
+    if (error) throw error;
+    res.json({ message: 'Lien social modifié avec succès', data: data[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/social-links/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase.from('social_links').delete().eq('id', id);
+
+    if (error) throw error;
+    res.json({ message: 'Lien social supprimé avec succès' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
 // Envoyer un email de contact
-app.post('/api/send-contact-email', async (req, res) => {
+app.post('/api/send-email', async (req, res) => {
   try {
     const { name, email, phone, service, message } = req.body;
 
+    // Configuration du transporteur nodemailer
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: email,
       to: process.env.CONTACT_EMAIL || 'contact@rayz.com',
-      subject: `Nouveau message de contact - ${name}`,
+      subject: `Nouveau message de ${name} - Rayz.com`,
       html: `
         <h2>Nouveau message de contact</h2>
         <p><strong>Nom:</strong> ${name}</p>
@@ -281,25 +377,10 @@ app.post('/api/send-contact-email', async (req, res) => {
       `
     };
 
-    await emailTransporter.sendMail(mailOptions);
-
-    // Envoyer aussi un accusé de réception
-    const confirmationMail = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Confirmation de réception - Rayz.com',
-      html: `
-        <h2>Merci pour votre message!</h2>
-        <p>Nous avons bien reçu votre message et nous vous contacterons dans les plus brefs délais.</p>
-        <p><strong>L'équipe Rayz.com</strong></p>
-      `
-    };
-
-    await emailTransporter.sendMail(confirmationMail);
-
+    await transporter.sendMail(mailOptions);
     res.json({ message: 'Email envoyé avec succès' });
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Erreur envoi email:', error);
     res.status(500).json({ error: 'Erreur lors de l\'envoi de l\'email' });
   }
 });
@@ -314,18 +395,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Initialisation de la base de données
-async function initializeDatabase() {
-  try {
-    // Cette fonction serait appelée manuellement la première fois
-    console.log('Base de données Supabase configurée');
-  } catch (error) {
-    console.error('Error initializing database:', error);
-  }
-}
-
-// Démarrage du serveur
-app.listen(PORT, async () => {
+// Démarrer le serveur
+app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
-  await initializeDatabase();
+  console.log(`Site principal: http://localhost:${PORT}`);
+  console.log(`Administration: http://localhost:${PORT}/admin`);
 });
