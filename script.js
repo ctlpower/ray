@@ -1,15 +1,23 @@
 // Configuration
 const API_BASE = '/api';
+let siteData = {};
 
 // Éléments DOM
+const promotionBanner = document.getElementById('promotion-banner');
+const promotionText = document.getElementById('promotion-text');
+const promotionIcon = document.getElementById('promotion-icon');
+const promotionClose = document.getElementById('promotion-close');
+const maintenanceBanner = document.getElementById('maintenance-banner');
+const maintenanceMessage = document.getElementById('maintenance-message');
+const heroCarousel = document.getElementById('hero-carousel');
+const carouselIndicators = document.getElementById('carousel-indicators');
 const servicesGrid = document.getElementById('services-grid');
+const promotionsGrid = document.getElementById('promotions-grid');
 const projectsGrid = document.getElementById('projects-grid');
 const contactForm = document.getElementById('contactForm');
-const mobileToggle = document.getElementById('mobile-toggle');
-const nav = document.getElementById('nav');
-
-// Données globales
-let siteData = {};
+const projectModal = document.getElementById('projectModal');
+const modalClose = document.getElementById('modalClose');
+const whatsappBtn = document.getElementById('whatsapp-btn');
 
 // Header scroll effect
 window.addEventListener('scroll', function() {
@@ -22,165 +30,297 @@ window.addEventListener('scroll', function() {
 });
 
 // Mobile menu toggle
+const mobileToggle = document.getElementById('mobile-toggle');
+const nav = document.getElementById('nav');
+
 mobileToggle.addEventListener('click', function() {
     nav.classList.toggle('active');
 });
 
-// Charger toutes les données du site
+// Fermer la bannière de promotion
+promotionClose.addEventListener('click', function() {
+    promotionBanner.style.display = 'none';
+});
+
+// Charger les données du site
 async function loadSiteData() {
     try {
         const response = await fetch(`${API_BASE}/site-data`);
-        const data = await response.json();
+        siteData = await response.json();
         
-        siteData = data;
-        
-        updateSiteContent(data);
-        loadServices(data.services);
-        loadProjects(data.projects);
-        
-        console.log('✅ Données chargées avec succès');
+        updateSiteContent();
+        setupPromotions();
+        setupHeroCarousel();
+        loadServices();
+        loadPromotions();
+        loadProjects();
     } catch (error) {
-        console.error('❌ Erreur chargement données:', error);
-        loadDefaultData();
+        console.error('Erreur lors du chargement des données:', error);
     }
 }
 
 // Mettre à jour le contenu du site
-function updateSiteContent(data) {
-    const siteInfo = data.siteInfo || {};
+function updateSiteContent() {
+    const { siteInfo } = siteData;
     
-    // Mettre à jour les informations de base
-    if (siteInfo.company_name) {
-        document.getElementById('site-name').textContent = siteInfo.company_name;
-        document.getElementById('about-company-name').textContent = siteInfo.company_name;
-        document.getElementById('footer-company-name').textContent = siteInfo.company_name;
-        document.getElementById('copyright-company-name').textContent = siteInfo.company_name;
+    if (!siteInfo) return;
+
+    // Mettre à jour les informations du site
+    document.getElementById('site-name').textContent = siteInfo.company_name || 'Rayz.com';
+    document.getElementById('hero-title').textContent = siteInfo.hero_title || 'Solutions de Sécurité Innovantes';
+    document.getElementById('hero-description').textContent = siteInfo.hero_description || 'Rayz.com est votre partenaire de confiance pour l\'installation de systèmes de surveillance modernes, Starlink, alarmes et bien plus encore.';
+    document.getElementById('about-company-name').textContent = siteInfo.company_name || 'Rayz.com';
+    document.getElementById('about-description').textContent = siteInfo.about_description || 'Fondée en 2018, Rayz.com est devenue un leader dans le domaine des solutions de sécurité et de connectivité innovantes. Notre équipe d\'experts est passionnée par la création d\'environnements plus sûrs et mieux connectés.';
+    document.getElementById('contact-address').textContent = siteInfo.address || '123 Avenue de la Sécurité, 75000 Paris';
+    document.getElementById('contact-phone').textContent = siteInfo.phone || '+33 1 23 45 67 89';
+    document.getElementById('contact-email').textContent = siteInfo.email || 'contact@rayz.com';
+    document.getElementById('footer-company-name').textContent = siteInfo.company_name || 'Rayz.com';
+    document.getElementById('footer-description').textContent = siteInfo.footer_description || 'Votre partenaire de confiance pour des solutions de sécurité innovantes et performantes.';
+    document.getElementById('footer-address').textContent = siteInfo.address || '123 Avenue de la Sécurité, Paris';
+    document.getElementById('footer-phone').textContent = siteInfo.phone || '+33 1 23 45 67 89';
+    document.getElementById('footer-email').textContent = siteInfo.email || 'contact@rayz.com';
+    document.getElementById('copyright-company-name').textContent = siteInfo.company_name || 'Rayz.com';
+    
+    // Mettre à jour le logo
+    if (siteInfo.logo_url) {
+        document.getElementById('site-logo').src = siteInfo.logo_url;
     }
     
-    if (siteInfo.hero_title) {
-        document.getElementById('hero-title').textContent = siteInfo.hero_title;
+    // Mettre à jour l'image about
+    if (siteInfo.about_image_url) {
+        document.getElementById('about-image').src = siteInfo.about_image_url;
     }
     
-    if (siteInfo.hero_description) {
-        document.getElementById('hero-description').textContent = siteInfo.hero_description;
+    // Mettre à jour les liens sociaux
+    if (siteInfo.facebook_url) {
+        document.getElementById('social-facebook').href = siteInfo.facebook_url;
+        document.getElementById('footer-facebook').href = siteInfo.facebook_url;
+    }
+    if (siteInfo.twitter_url) {
+        document.getElementById('social-twitter').href = siteInfo.twitter_url;
+        document.getElementById('footer-twitter').href = siteInfo.twitter_url;
+    }
+    if (siteInfo.instagram_url) {
+        document.getElementById('social-instagram').href = siteInfo.instagram_url;
+        document.getElementById('footer-instagram').href = siteInfo.instagram_url;
+    }
+    if (siteInfo.linkedin_url) {
+        document.getElementById('social-linkedin').href = siteInfo.linkedin_url;
+        document.getElementById('footer-linkedin').href = siteInfo.linkedin_url;
+    }
+    if (siteInfo.whatsapp_url) {
+        document.getElementById('social-whatsapp').href = siteInfo.whatsapp_url;
+        document.getElementById('whatsapp-btn').href = siteInfo.whatsapp_url;
+        document.getElementById('whatsapp-btn').style.display = 'flex';
     }
     
-    if (siteInfo.about_title) {
-        document.getElementById('about-title').textContent = siteInfo.about_title;
+    // Gérer le mode maintenance
+    if (siteInfo.maintenance_mode) {
+        maintenanceBanner.style.display = 'block';
+        maintenanceMessage.textContent = siteInfo.maintenance_message || 'Le site est en maintenance. Veuillez revenir plus tard.';
     }
-    
-    if (siteInfo.about_description) {
-        document.getElementById('about-description').textContent = siteInfo.about_description;
-    }
-    
-    // Informations de contact
-    if (siteInfo.address) {
-        document.getElementById('contact-address').textContent = siteInfo.address;
-        document.getElementById('footer-address').textContent = siteInfo.address;
-    }
-    
-    if (siteInfo.phone) {
-        document.getElementById('contact-phone').textContent = siteInfo.phone;
-        document.getElementById('footer-phone').textContent = siteInfo.phone;
-    }
-    
-    if (siteInfo.email) {
-        document.getElementById('contact-email').textContent = siteInfo.email;
-        document.getElementById('footer-email').textContent = siteInfo.email;
-    }
-    
-    if (siteInfo.description) {
-        document.getElementById('footer-description').textContent = siteInfo.description;
-    }
-    
-    // Mettre à jour les liens WhatsApp
-    updateWhatsAppLinks(siteInfo.phone);
 }
 
-// Mettre à jour les liens WhatsApp
-function updateWhatsAppLinks(phone) {
-    const phoneNumber = phone ? phone.replace(/\s/g, '') : '+33123456789';
-    const companyName = siteData.siteInfo?.company_name || 'Rayz.com';
+// Configurer les promotions
+function setupPromotions() {
+    const { promotions } = siteData;
     
-    const whatsappLinks = document.querySelectorAll('.btn-whatsapp, .btn-whatsapp-large');
-    whatsappLinks.forEach(link => {
-        link.href = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=Bonjour%20${encodeURIComponent(companyName)}%20je%20suis%20intéressé%20par%20vos%20services`;
-    });
+    if (!promotions || promotions.length === 0) return;
     
-    // Mettre à jour les liens d'appel
-    const callLinks = document.querySelectorAll('.btn-call, a[href^="tel:"]');
-    callLinks.forEach(link => {
-        link.href = `tel:${phoneNumber}`;
-    });
+    const currentPromotion = promotions[0]; // Prendre la première promotion active
+    
+    if (currentPromotion) {
+        promotionBanner.style.display = 'block';
+        promotionText.textContent = currentPromotion.title;
+        
+        // Changer l'icône selon le type de promotion
+        switch(currentPromotion.type) {
+            case 'christmas':
+                promotionIcon.textContent = '🎄';
+                promotionBanner.style.background = 'linear-gradient(135deg, #d32f2f 0%, #c62828 100%)';
+                break;
+            case 'black_friday':
+                promotionIcon.textContent = '🛍️';
+                promotionBanner.style.background = 'linear-gradient(135deg, #000 0%, #333 100%)';
+                break;
+            case 'womens_day':
+                promotionIcon.textContent = '🌸';
+                promotionBanner.style.background = 'linear-gradient(135deg, #e91e63 0%, #ad1457 100%)';
+                break;
+            case 'national_day':
+                promotionIcon.textContent = '🇨🇲';
+                promotionBanner.style.background = 'linear-gradient(135deg, #007a5e 0%, #ce1126 50%, #fcd116 100%)';
+                break;
+            default:
+                promotionIcon.textContent = '🎉';
+        }
+    }
 }
 
-// Charger les services
-function loadServices(services) {
-    if (!services || services.length === 0) {
-        servicesGrid.innerHTML = '<p class="no-data">Aucun service disponible pour le moment.</p>';
+// Configurer le carousel hero
+function setupHeroCarousel() {
+    const { banners } = siteData;
+    
+    if (!banners || banners.length === 0) {
+        // Bannière par défaut
+        heroCarousel.innerHTML = `
+            <div class="carousel-slide active">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI4MDAiIHZpZXdCb3g9IjAgMCAxMjAwIDgwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iODAwIiBmaWxsPSIjMDA5NkQ2Ii8+CjxjaXJjbGUgY3g9IjYwMCIgY3k9IjQwMCIgcj0iMTUwIiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC4xIi8+CjxjaXJjbGUgY3g9IjMwMCIgY3k9IjIwMCIgcj0iODAiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjA1Ii8+CjxjaXJjbGUgY3g9IjkwMCIgY3k9IjYwMCIgcj0iMTAwIiBmaWxsPSJ3aGl0ZSIgb3BhY2l0eT0iMC4wNyIvPgo8cmVjdCB4PSI0MDAiIHk9IjMwMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IndoaXRlIiBvcGFjaXR5PSIwLjEiIHJ4PSIyMCIvPgo8L3N2Zz4K" alt="Rayz.com Sécurité">
+            </div>
+        `;
         return;
     }
     
+    heroCarousel.innerHTML = '';
+    carouselIndicators.innerHTML = '';
+    
+    banners.forEach((banner, index) => {
+        const slide = document.createElement('div');
+        slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+        slide.innerHTML = `<img src="${banner.image}" alt="${banner.title}">`;
+        heroCarousel.appendChild(slide);
+        
+        const indicator = document.createElement('div');
+        indicator.className = `carousel-indicator ${index === 0 ? 'active' : ''}`;
+        indicator.setAttribute('data-slide', index);
+        carouselIndicators.appendChild(indicator);
+    });
+    
+    // Configurer le carousel automatique
+    startCarousel();
+}
+
+// Démarrer le carousel automatique
+function startCarousel() {
+    const carouselSlides = document.querySelectorAll('.carousel-slide');
+    const carouselIndicators = document.querySelectorAll('.carousel-indicator');
+    let currentSlide = 0;
+    
+    function showSlide(index) {
+        carouselSlides.forEach(slide => slide.classList.remove('active'));
+        carouselIndicators.forEach(indicator => indicator.classList.remove('active'));
+        
+        carouselSlides[index].classList.add('active');
+        carouselIndicators[index].classList.add('active');
+        currentSlide = index;
+    }
+    
+    carouselIndicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            showSlide(index);
+        });
+    });
+    
+    // Auto-advance carousel
+    setInterval(() => {
+        let nextSlide = (currentSlide + 1) % carouselSlides.length;
+        showSlide(nextSlide);
+    }, 5000);
+}
+
+// Charger les services
+function loadServices() {
+    const { services } = siteData;
+    
+    if (!services || services.length === 0) return;
+    
     servicesGrid.innerHTML = '';
     
-    services.forEach((service, index) => {
+    services.forEach(service => {
         const serviceCard = document.createElement('div');
         serviceCard.className = 'service-card';
-        serviceCard.style.animationDelay = `${index * 0.1}s`;
-        
         serviceCard.innerHTML = `
             <div class="service-icon">
-                <i class="${service.icon || 'fas fa-cog'}"></i>
+                <i class="${service.icon}"></i>
             </div>
             <h3>${service.title}</h3>
             <p>${service.description}</p>
-            ${service.promotion ? `<div class="service-promotion">${service.promotion_text || 'Promotion'}</div>` : ''}
+            ${service.discount ? `<div class="service-price">
+                <span class="service-discount">-${service.discount}%</span>
+            </div>` : ''}
         `;
-        
         servicesGrid.appendChild(serviceCard);
     });
     
     // Mettre à jour les services dans le footer
-    updateFooterServices(services);
+    updateFooterServices();
+    
+    // Animer les services
+    animateServices();
 }
 
 // Mettre à jour les services dans le footer
-function updateFooterServices(services) {
+function updateFooterServices() {
+    const { services } = siteData;
     const footerServices = document.getElementById('footer-services');
-    if (!footerServices) return;
+    
+    if (!services || !footerServices) return;
     
     footerServices.innerHTML = '';
     
-    const servicesToShow = services.slice(0, 5);
-    servicesToShow.forEach(service => {
+    services.slice(0, 5).forEach(service => {
         const li = document.createElement('li');
         li.innerHTML = `<a href="#services">${service.title}</a>`;
         footerServices.appendChild(li);
     });
 }
 
+// Charger les promotions
+function loadPromotions() {
+    const { promotions } = siteData;
+    
+    if (!promotions || promotions.length === 0) return;
+    
+    promotionsGrid.innerHTML = '';
+    
+    promotions.forEach(promotion => {
+        const promotionCard = document.createElement('div');
+        promotionCard.className = 'promotion-card';
+        
+        const startDate = new Date(promotion.start_date).toLocaleDateString('fr-FR');
+        const endDate = new Date(promotion.end_date).toLocaleDateString('fr-FR');
+        
+        promotionCard.innerHTML = `
+            <div class="promotion-image">
+                <img src="${promotion.image}" alt="${promotion.title}">
+                <div class="promotion-badge">-${promotion.discount}%</div>
+            </div>
+            <div class="promotion-content">
+                <h3>${promotion.title}</h3>
+                <p>${promotion.description}</p>
+                <div class="promotion-dates">
+                    <span>Du ${startDate}</span>
+                    <span>Au ${endDate}</span>
+                </div>
+            </div>
+        `;
+        
+        promotionsGrid.appendChild(promotionCard);
+    });
+    
+    // Animer les promotions
+    animatePromotions();
+}
+
 // Charger les projets
-function loadProjects(projects) {
-    if (!projects || projects.length === 0) {
-        projectsGrid.innerHTML = '<p class="no-data">Aucun projet disponible pour le moment.</p>';
-        return;
-    }
+function loadProjects() {
+    const { projects } = siteData;
+    
+    if (!projects || projects.length === 0) return;
     
     projectsGrid.innerHTML = '';
     
-    projects.forEach((project, index) => {
+    projects.forEach(project => {
         const projectCard = document.createElement('div');
         projectCard.className = 'project-card';
-        projectCard.setAttribute('data-category', project.category || 'general');
-        projectCard.style.animationDelay = `${index * 0.1}s`;
-        
-        const imageUrl = project.image_url || 'data:image/svg+xml,PHN2ZyB3aWR0aD0iMzUwIiBoZWlnaHQ9IjIyMCIgdmlld0JveD0iMCAwIDM1MCAyMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzNTAiIGhlaWdodD0iMjIwIiByeD0iMTAiIGZpbGw9IiNGNEY2RjgiLz4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzMwIiBoZWlnaHQ9IjIwMCIgcng9IjUiIGZpbGw9IiNFOUU3RUYiLz4KPGNpcmNsZSBjeD0iMTc1IiBjeT0iMTEwIiByPSI0MCIgZmlsbD0iIzAwOTZENiIvPgo8Y2lyY2xlIGN4PSIxNzUiIGN5PSIxMTAiIHI9IjE1IiBmaWxsPSIjRjhGQUZDIi8+CjxjaXJjbGUgY3g9IjE3NSIgY3k9IjExMCIgcj0iOCIgZmlsbD0iIzAwOTZENiIvPgo8cmVjdCB4PSIxMCIgeT0iMTUwIiB3aWR0aD0iMzMwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjhGQUZDIi8+CjxyZWN0IHg9IjMwIiB5PSIxNjAiIHdpZHRoPSIyOTAiIGhlaWdodD0iNDAiIHJ4PSI1IiBmaWxsPSIjRTlFN0VGIi8+Cjwvc3ZnPgo=';
+        projectCard.setAttribute('data-category', project.category);
+        projectCard.setAttribute('data-project', project.id);
         
         projectCard.innerHTML = `
             <div class="project-image">
-                <img src="${imageUrl}" alt="${project.title}" loading="lazy">
+                <img src="${project.image}" alt="${project.title}">
                 <div class="project-overlay">
-                    <span class="btn btn-primary">Voir le projet</span>
+                    <a href="#" class="btn btn-primary">Voir le projet</a>
                 </div>
             </div>
             <div class="project-info">
@@ -190,16 +330,116 @@ function loadProjects(projects) {
         `;
         
         projectCard.addEventListener('click', () => {
-            showProjectDetails(project);
+            openProjectModal(project);
         });
         
         projectsGrid.appendChild(projectCard);
     });
+    
+    // Animer les projets
+    animateProjects();
 }
 
-// Afficher les détails du projet
-function showProjectDetails(project) {
-    alert(`Projet: ${project.title}\n\n${project.description}`);
+// Filtrer les projets
+function setupProjectFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            projectCards.forEach(card => {
+                if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+}
+
+// Ouvrir la modal du projet
+function openProjectModal(project) {
+    const modalTitle = document.getElementById('modalTitle');
+    const modalImage = document.getElementById('modal-image');
+    const modalCaption = document.getElementById('modal-caption');
+    const projectDetailTitle = document.getElementById('projectDetailTitle');
+    const projectDetailDescription = document.getElementById('projectDetailDescription');
+    
+    modalTitle.textContent = project.title;
+    modalImage.src = project.image;
+    modalCaption.textContent = project.title;
+    projectDetailTitle.textContent = project.title;
+    projectDetailDescription.textContent = project.description;
+    
+    projectModal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+// Fermer la modal
+modalClose.addEventListener('click', function() {
+    projectModal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+});
+
+// Fermer la modal en cliquant à l'extérieur
+window.addEventListener('click', function(e) {
+    if (e.target === projectModal) {
+        projectModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// Animer les services
+function animateServices() {
+    const serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach((card, index) => {
+        card.style.transitionDelay = `${index * 0.1}s`;
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    });
+}
+
+// Animer les promotions
+function animatePromotions() {
+    const promotionCards = document.querySelectorAll('.promotion-card');
+    promotionCards.forEach((card, index) => {
+        card.style.transitionDelay = `${index * 0.2}s`;
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    });
+}
+
+// Animer les projets
+function animateProjects() {
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach((card, index) => {
+        card.style.transitionDelay = `${index * 0.1}s`;
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    });
+}
+
+// Animer les éléments au défilement
+function animateOnScroll() {
+    const elements = document.querySelectorAll('.service-card, .project-card, .promotion-card, .stat');
+    
+    elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.2;
+        
+        if (elementPosition < screenPosition) {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }
+    });
 }
 
 // Gestion du formulaire de contact
@@ -214,32 +454,26 @@ contactForm.addEventListener('submit', async function(e) {
         message: document.getElementById('message').value
     };
     
-    // Validation basique
-    if (!formData.name || !formData.email || !formData.message) {
-        alert('Veuillez remplir tous les champs obligatoires.');
-        return;
-    }
-    
     try {
-        // Envoyer l'email via EmailJS
-        const emailResult = await emailjs.send('service_4ab2q68', 'template_m8zvkj9', {
-            from_name: formData.name,
-            from_email: formData.email,
-            phone: formData.phone,
-            service: formData.service,
-            message: formData.message,
-            to_email: siteData.siteInfo?.email || 'contact@rayz.com'
+        const response = await fetch(`${API_BASE}/send-contact-email`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
         });
         
-        if (emailResult.status === 200) {
-            alert('✅ Message envoyé avec succès! Nous vous contacterons bientôt.');
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert('Merci pour votre message! Nous vous contacterons bientôt.');
             contactForm.reset();
         } else {
-            throw new Error('Erreur lors de l\'envoi du message');
+            alert('Une erreur est survenue lors de l\'envoi de votre message. Veuillez réessayer.');
         }
     } catch (error) {
-        console.error('Erreur envoi email:', error);
-        alert('❌ Une erreur est survenue. Veuillez réessayer ou nous contacter directement par téléphone.');
+        console.error('Erreur lors de l\'envoi du message:', error);
+        alert('Une erreur est survenue lors de l\'envoi de votre message. Veuillez réessayer.');
     }
 });
 
@@ -266,52 +500,12 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Charger les données par défaut en cas d'erreur
-function loadDefaultData() {
-    const defaultData = {
-        services: [
-            {
-                title: 'Surveillance Vidéo',
-                description: 'Installation de systèmes de vidéosurveillance haute définition avec détection intelligente et vision nocturne.',
-                icon: 'fas fa-video'
-            },
-            {
-                title: 'Starlink',
-                description: 'Installation professionnelle de systèmes Starlink pour une connectivité Internet haut débit partout.',
-                icon: 'fas fa-satellite-dish'
-            },
-            {
-                title: 'Systèmes d\'Alarme',
-                description: 'Solutions d\'alarme complètes avec détection de mouvement, capteurs et notifications en temps réel.',
-                icon: 'fas fa-shield-alt'
-            }
-        ],
-        projects: []
-    };
-    
-    loadServices(defaultData.services);
-    loadProjects(defaultData.projects);
-}
-
-// Animation au défilement
-function animateOnScroll() {
-    const elements = document.querySelectorAll('.service-card, .project-card, .stat');
-    
-    elements.forEach(element => {
-        const elementPosition = element.getBoundingClientRect().top;
-        const screenPosition = window.innerHeight / 1.2;
-        
-        if (elementPosition < screenPosition) {
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-        }
-    });
-}
-
-// Initialisation
+// Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
     loadSiteData();
+    setupProjectFilters();
     
     window.addEventListener('scroll', animateOnScroll);
-    animateOnScroll();
+    // Déclencher une fois au chargement
+    setTimeout(animateOnScroll, 500);
 });
