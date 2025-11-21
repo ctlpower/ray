@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <!-- Promotion Banner -->
+    <!-- Bannière de Promotion -->
     <div id="promotion-banner" class="promotion-banner" style="display: none;">
         <div class="container">
             <div class="promotion-content">
-                <span id="promotion-icon" class="promotion-icon">🎄</span>
+                <span class="promotion-badge" id="promotion-badge">PROMOTION</span>
                 <span id="promotion-text" class="promotion-text"></span>
                 <button id="promotion-close" class="promotion-close">&times;</button>
             </div>
@@ -33,7 +34,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <img id="site-logo" src="" alt="Rayz.com Logo">
+                    <img id="site-logo" src="" alt="Rayz.com Logo" style="display: none;">
                     <h1 id="site-name">Rayz.com</h1>
                 </div>
                 <div class="mobile-toggle" id="mobile-toggle">
@@ -44,7 +45,6 @@
                         <li><a href="#home">Accueil</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#projects">Projets</a></li>
-                        <li><a href="#promotions">Promotions</a></li>
                         <li><a href="#about">À propos</a></li>
                         <li><a href="#contact">Contact</a></li>
                         <li><a href="/admin" class="admin-link">Admin</a></li>
@@ -56,24 +56,26 @@
 
     <!-- Hero Section avec Carousel -->
     <section class="hero" id="home">
-        <div class="hero-carousel" id="hero-carousel">
-            <!-- Les bannières seront chargées dynamiquement ici -->
-        </div>
-        <div class="hero-overlay">
-            <div class="container">
-                <div class="hero-content">
-                    <h1 id="hero-title">Solutions de Sécurité Innovantes</h1>
-                    <p id="hero-description">Rayz.com est votre partenaire de confiance pour l'installation de systèmes de surveillance modernes, Starlink, alarmes et bien plus encore.</p>
-                    <div class="hero-btns">
-                        <a href="#projects" class="btn btn-primary">Voir nos projets</a>
-                        <a href="https://shop.thetic.de" target="_blank" class="btn btn-shop"><i class="fas fa-shopping-cart"></i> Visiter notre boutique</a>
-                        <a href="#" id="whatsapp-btn" class="btn btn-whatsapp" style="display: none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <div class="hero-carousel">
+            <div class="carousel-slide active">
+                <div class="container">
+                    <div class="hero-content">
+                        <h1 id="hero-title">Solutions de Sécurité Innovantes</h1>
+                        <p id="hero-description">Rayz.com est votre partenaire de confiance pour l'installation de systèmes de surveillance modernes, Starlink, alarmes et bien plus encore.</p>
+                        <div class="hero-btns">
+                            <a href="#projects" class="btn btn-primary">Voir nos projets</a>
+                            <a href="https://shop.thetic.de" target="_blank" class="btn btn-shop"><i class="fas fa-shopping-cart"></i> Visiter notre boutique</a>
+                            <a href="#" id="whatsapp-btn" class="btn btn-whatsapp" style="display: none;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <img id="hero-image" src="" alt="Systèmes de sécurité modernes" style="display: none;">
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="carousel-indicators" id="carousel-indicators">
-            <!-- Les indicateurs seront générés dynamiquement -->
+            <div class="carousel-indicators">
+                <div class="carousel-indicator active" data-slide="0"></div>
+            </div>
         </div>
     </section>
 
@@ -90,15 +92,18 @@
         </div>
     </section>
 
-    <!-- Promotions Section -->
-    <section class="section promotions" id="promotions">
+    <!-- Bannière Promotionnelle Spéciale -->
+    <section id="special-promotion" class="special-promotion" style="display: none;">
         <div class="container">
-            <div class="section-header">
-                <h2>Promotions Spéciales</h2>
-                <p>Profitez de nos offres exceptionnelles pour sécuriser votre espace</p>
-            </div>
-            <div class="promotions-grid" id="promotions-grid">
-                <!-- Les promotions seront chargées dynamiquement ici -->
+            <div class="promotion-content">
+                <div class="promotion-text">
+                    <h3 id="promotion-title"></h3>
+                    <p id="promotion-desc"></p>
+                    <div class="promotion-timer" id="promotion-timer"></div>
+                </div>
+                <div class="promotion-image">
+                    <img id="promotion-banner-img" src="" alt="Promotion">
+                </div>
             </div>
         </div>
     </section>
@@ -146,7 +151,7 @@
                     </div>
                 </div>
                 <div class="about-image">
-                    <img id="about-image" src="" alt="Équipe Rayz.com">
+                    <img id="about-image" src="" alt="Équipe Rayz.com" style="display: none;">
                 </div>
             </div>
         </div>
@@ -192,12 +197,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="social-links">
-                        <a href="#" id="social-facebook" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" id="social-twitter" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" id="social-instagram" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" id="social-linkedin" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" id="social-whatsapp" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                    <div class="social-links" id="social-links">
+                        <!-- Les liens sociaux seront chargés dynamiquement ici -->
                     </div>
                 </div>
                 <div class="contact-form">
@@ -218,11 +219,7 @@
                             <label for="service">Service intéressé</label>
                             <select id="service" class="form-control">
                                 <option value="">Sélectionnez un service</option>
-                                <option value="surveillance">Surveillance vidéo</option>
-                                <option value="starlink">Installation Starlink</option>
-                                <option value="alarmes">Systèmes d'alarme</option>
-                                <option value="controle">Contrôle d'accès</option>
-                                <option value="autres">Autres</option>
+                                <!-- Les options seront chargées dynamiquement -->
                             </select>
                         </div>
                         <div class="form-group">
@@ -244,11 +241,8 @@
                 <div class="footer-col">
                     <h4 id="footer-company-name">Rayz.com</h4>
                     <p id="footer-description">Votre partenaire de confiance pour des solutions de sécurité innovantes et performantes.</p>
-                    <div class="social-links">
-                        <a href="#" id="footer-facebook" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" id="footer-twitter" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" id="footer-instagram" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" id="footer-linkedin" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <div class="social-links" id="footer-social-links">
+                        <!-- Les liens sociaux seront chargés dynamiquement ici -->
                     </div>
                 </div>
                 <div class="footer-col">
@@ -257,7 +251,6 @@
                         <li><a href="#home">Accueil</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#projects">Projets</a></li>
-                        <li><a href="#promotions">Promotions</a></li>
                         <li><a href="#about">À propos</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
