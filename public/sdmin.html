@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Rayz.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+    <div class="admin-panel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1><i class="fas fa-cogs"></i> Administration Rayz.com</h1>
+                <p>Gérez l'ensemble du contenu de votre site web</p>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="site-info">Informations du Site</button>
+                <button class="admin-tab" data-tab="services">Services</button>
+                <button class="admin-tab" data-tab="projects">Projets</button>
+                <button class="admin-tab" data-tab="promotions">Promotions</button>
+                <button class="admin-tab" data-tab="social">Réseaux Sociaux</button>
+            </div>
+
+            <div id="alerts-container"></div>
+
+            <!-- Informations du Site -->
+            <div class="admin-tab-content active" id="site-info-content">
+                <h2><i class="fas fa-info-circle"></i> Informations Générales du Site</h2>
+                <form id="site-info-form" class="admin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="company_name">Nom de l'entreprise</label>
+                            <input type="text" id="company_name" name="company_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email de contact</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Téléphone</label>
+                            <input type="tel" id="phone" name="phone" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="whatsapp_number">Numéro WhatsApp</label>
+                            <input type="tel" id="whatsapp_number" name="whatsapp_number" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Adresse</label>
+                        <textarea id="address" name="address" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hero_title">Titre de la page d'accueil</label>
+                        <input type="text" id="hero_title" name="hero_title" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hero_description">Description de la page d'accueil</label>
+                        <textarea id="hero_description" name="hero_description" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="about_description">Description À Propos</label>
+                        <textarea id="about_description" name="about_description" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="footer_description">Description du pied de page</label>
+                        <textarea id="footer_description" name="footer_description" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="logo">Logo (URL ou fichier)</label>
+                            <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
+                            <input type="text" id="logo_url" name="logo_url" class="form-control" placeholder="Ou entrez une URL">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero_image">Image Hero (URL ou fichier)</label>
+                            <input type="file" id="hero_image" name="hero_image" class="form-control" accept="image/*">
+                            <input type="text" id="hero_image_url" name="hero_image_url" class="form-control" placeholder="Ou entrez une URL">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="about_image">Image À Propos (URL ou fichier)</label>
+                        <input type="file" id="about_image" name="about_image" class="form-control" accept="image/*">
+                        <input type="text" id="about_image_url" name="about_image_url" class="form-control" placeholder="Ou entrez une URL">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="maintenance_mode" name="maintenance_mode">
+                            <label for="maintenance_mode">Mode maintenance</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maintenance_message">Message de maintenance</label>
+                        <textarea id="maintenance_message" name="maintenance_message" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer les modifications
+                    </button>
+                </form>
+            </div>
+
+            <!-- Services -->
+            <div class="admin-tab-content" id="services-content">
+                <div class="admin-section-header">
+                    <h2><i class="fas fa-concierge-bell"></i> Gestion des Services</h2>
+                    <button class="btn btn-primary" id="add-service-btn">
+                        <i class="fas fa-plus"></i> Ajouter un service
+                    </button>
+                </div>
+
+                <form id="service-form" class="admin-form" style="display: none;">
+                    <h3 id="service-form-title">Nouveau Service</h3>
+                    <input type="hidden" id="service_id" name="id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="service_title">Titre du service</label>
+                            <input type="text" id="service_title" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="service_icon">Icône (Font Awesome)</label>
+                            <input type="text" id="service_icon" name="icon" class="form-control" placeholder="fas fa-cog" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="service_description">Description</label>
+                        <textarea id="service_description" name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="service_image">Image (fichier)</label>
+                            <input type="file" id="service_image" name="image" class="form-control" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label for="service_discount">Texte de réduction</label>
+                            <input type="text" id="service_discount" name="discount" class="form-control" placeholder="-20% jusqu'au 31/12">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="service_promotion">Promotion associée</label>
+                        <select id="service_promotion" name="promotion_id" class="form-control">
+                            <option value="">Aucune promotion</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-service-btn">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+
+                <div class="services-list" id="services-list">
+                    <!-- Les services seront chargés ici -->
+                </div>
+            </div>
+
+            <!-- Projets -->
+            <div class="admin-tab-content" id="projects-content">
+                <div class="admin-section-header">
+                    <h2><i class="fas fa-project-diagram"></i> Gestion des Projets</h2>
+                    <button class="btn btn-primary" id="add-project-btn">
+                        <i class="fas fa-plus"></i> Ajouter un projet
+                    </button>
+                </div>
+
+                <form id="project-form" class="admin-form" style="display: none;">
+                    <h3 id="project-form-title">Nouveau Projet</h3>
+                    <input type="hidden" id="project_id" name="id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="project_title">Titre du projet</label>
+                            <input type="text" id="project_title" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="project_category">Catégorie</label>
+                            <select id="project_category" name="category" class="form-control" required>
+                                <option value="surveillance">Surveillance</option>
+                                <option value="starlink">Starlink</option>
+                                <option value="alarmes">Alarmes</option>
+                                <option value="controle">Contrôle d'accès</option>
+                                <option value="autres">Autres</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project_description">Description</label>
+                        <textarea id="project_description" name="description" class="form-control" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="project_image">Image (fichier)</label>
+                        <input type="file" id="project_image" name="image" class="form-control" accept="image/*" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-project-btn">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+
+                <div class="projects-list" id="projects-list">
+                    <!-- Les projets seront chargés ici -->
+                </div>
+            </div>
+
+            <!-- Promotions -->
+            <div class="admin-tab-content" id="promotions-content">
+                <div class="admin-section-header">
+                    <h2><i class="fas fa-tags"></i> Gestion des Promotions</h2>
+                    <button class="btn btn-primary" id="add-promotion-btn">
+                        <i class="fas fa-plus"></i> Ajouter une promotion
+                    </button>
+                </div>
+
+                <form id="promotion-form" class="admin-form" style="display: none;">
+                    <h3 id="promotion-form-title">Nouvelle Promotion</h3>
+                    <input type="hidden" id="promotion_id" name="id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="promotion_name">Nom de la promotion</label>
+                            <input type="text" id="promotion_name" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="promotion_animation">Animation</label>
+                            <select id="promotion_animation" name="animation_class" class="form-control">
+                                <option value="">Aucune animation</option>
+                                <option value="christmas-promotion">Noël</option>
+                                <option value="black-friday-promotion">Black Friday</option>
+                                <option value="womens-day-promotion">8 Mars</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="promotion_description">Description</label>
+                        <textarea id="promotion_description" name="description" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="promotion_start">Date de début</label>
+                            <input type="datetime-local" id="promotion_start" name="start_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="promotion_end">Date de fin</label>
+                            <input type="datetime-local" id="promotion_end" name="end_date" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="promotion_discount">Texte de réduction</label>
+                            <input type="text" id="promotion_discount" name="discount_text" class="form-control" placeholder="Jusqu'à -50%">
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="promotion_active" name="active" checked>
+                            <label for="promotion_active">Promotion active</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="promotion_banner">Bannière (fichier)</label>
+                        <input type="file" id="promotion_banner" name="banner_image" class="form-control" accept="image/*">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-promotion-btn">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+
+                <div class="promotions-list" id="promotions-list">
+                    <!-- Les promotions seront chargées ici -->
+                </div>
+            </div>
+
+            <!-- Réseaux Sociaux -->
+            <div class="admin-tab-content" id="social-content">
+                <div class="admin-section-header">
+                    <h2><i class="fas fa-share-alt"></i> Gestion des Réseaux Sociaux</h2>
+                    <button class="btn btn-primary" id="add-social-btn">
+                        <i class="fas fa-plus"></i> Ajouter un réseau
+                    </button>
+                </div>
+
+                <form id="social-form" class="admin-form" style="display: none;">
+                    <h3 id="social-form-title">Nouveau Réseau Social</h3>
+                    <input type="hidden" id="social_id" name="id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="social_platform">Plateforme</label>
+                            <select id="social_platform" name="platform" class="form-control" required>
+                                <option value="facebook">Facebook</option>
+                                <option value="twitter">Twitter</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="whatsapp">WhatsApp</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="social_url">URL</label>
+                            <input type="url" id="social_url" name="url" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-social-btn">
+                            <i class="fas fa-times"></i> Annuler
+                        </button>
+                    </div>
+                </form>
+
+                <div class="social-list" id="social-list">
+                    <!-- Les réseaux sociaux seront chargés ici -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
