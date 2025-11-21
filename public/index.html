@@ -16,6 +16,17 @@
     </script>
 </head>
 <body>
+    <!-- Bannière de Promotion -->
+    <div id="promotion-banner" class="promotion-banner" style="display: none;">
+        <div class="container">
+            <div class="promotion-content">
+                <span class="promotion-icon">🎁</span>
+                <span id="promotion-text" class="promotion-text"></span>
+                <button id="promotion-close" class="promotion-close">&times;</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Maintenance Banner -->
     <div id="maintenance-banner" class="maintenance-banner" style="display: none;">
         <div class="container">
@@ -54,11 +65,15 @@
             <div class="carousel-slide active">
                 <div class="container">
                     <div class="hero-content">
-                        <h1>Solutions de Sécurité Innovantes</h1>
+                        <h1 id="hero-title">Solutions de Sécurité Innovantes</h1>
                         <p id="hero-description">Rayz.com est votre partenaire de confiance pour l'installation de systèmes de surveillance modernes, Starlink, alarmes et bien plus encore.</p>
                         <div class="hero-btns">
-                            <a href="#projects" class="btn btn-primary">Voir nos projets</a>
-                            <a href="https://shop.thetic.de" target="_blank" class="btn btn-shop"><i class="fas fa-shopping-cart"></i> Visiter notre boutique</a>
+                            <a href="#services" class="btn btn-primary">Nos Services</a>
+                            <a href="#contact" class="btn btn-secondary">Contact Rapide</a>
+                            <a href="https://api.whatsapp.com/send?phone=+33123456789&text=Bonjour%20Rayz.com%20je%20suis%20intéressé%20par%20vos%20services" 
+                               target="_blank" class="btn btn-whatsapp">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </a>
                         </div>
                     </div>
                     <div class="hero-image">
@@ -66,10 +81,31 @@
                     </div>
                 </div>
             </div>
-            <div class="carousel-indicators">
-                <div class="carousel-indicator active" data-slide="0"></div>
-                <div class="carousel-indicator" data-slide="1"></div>
-                <div class="carousel-indicator" data-slide="2"></div>
+        </div>
+        <div class="hero-promotion" id="hero-promotion" style="display: none;">
+            <div class="container">
+                <div class="promotion-hero-content">
+                    <h3 id="promotion-hero-title"></h3>
+                    <p id="promotion-hero-description"></p>
+                    <div class="promotion-timer" id="promotion-timer">
+                        <div class="timer-item">
+                            <span id="days">00</span>
+                            <span>Jours</span>
+                        </div>
+                        <div class="timer-item">
+                            <span id="hours">00</span>
+                            <span>Heures</span>
+                        </div>
+                        <div class="timer-item">
+                            <span id="minutes">00</span>
+                            <span>Minutes</span>
+                        </div>
+                        <div class="timer-item">
+                            <span id="seconds">00</span>
+                            <span>Secondes</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -83,6 +119,19 @@
             </div>
             <div class="services-grid" id="services-grid">
                 <!-- Les services seront chargés dynamiquement ici -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotion Speciale Section -->
+    <section id="special-promotion" class="special-promotion" style="display: none;">
+        <div class="container">
+            <div class="promotion-header">
+                <h2 id="promotion-section-title">Promotion Spéciale</h2>
+                <p id="promotion-section-description">Profitez de nos offres exceptionnelles pour un temps limité</p>
+            </div>
+            <div class="promotion-services" id="promotion-services">
+                <!-- Services en promotion seront chargés ici -->
             </div>
         </div>
     </section>
@@ -112,7 +161,7 @@
         <div class="container">
             <div class="about-content">
                 <div class="about-text">
-                    <h2>À Propos de <span id="about-company-name">Rayz.com</span></h2>
+                    <h2 id="about-title">À Propos de <span id="about-company-name">Rayz.com</span></h2>
                     <p id="about-description">Fondée en 2018, Rayz.com est devenue un leader dans le domaine des solutions de sécurité et de connectivité innovantes. Notre équipe d'experts est passionnée par la création d'environnements plus sûrs et mieux connectés.</p>
                     <div class="about-stats">
                         <div class="stat">
@@ -176,6 +225,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="contact-actions">
+                        <a href="https://api.whatsapp.com/send?phone=+33123456789&text=Bonjour%20Rayz.com%20je%20suis%20intéressé%20par%20vos%20services" 
+                           target="_blank" class="btn btn-whatsapp-large">
+                            <i class="fab fa-whatsapp"></i> Contact WhatsApp
+                        </a>
+                        <a href="tel:+33123456789" class="btn btn-call">
+                            <i class="fas fa-phone"></i> Appeler Maintenant
+                        </a>
+                    </div>
                     <div class="social-links">
                         <a href="#" id="social-facebook" class="social-link"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" id="social-twitter" class="social-link"><i class="fab fa-twitter"></i></a>
@@ -187,11 +245,11 @@
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
-                            <label for="name">Nom complet</label>
+                            <label for="name">Nom complet *</label>
                             <input type="text" id="name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Adresse email</label>
+                            <label for="email">Adresse email *</label>
                             <input type="email" id="email" class="form-control" required>
                         </div>
                         <div class="form-group">
@@ -210,11 +268,12 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" class="form-control" required></textarea>
+                            <label for="message">Message *</label>
+                            <textarea id="message" class="form-control" required placeholder="Décrivez votre projet..."></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Envoyer le message</button>
-                        <a href="https://shop.thetic.de" target="_blank" class="btn btn-shop" style="margin-top: 20px; display: inline-block; width: 100%; text-align: center;"><i class="fas fa-shopping-cart"></i> Visiter notre boutique</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Envoyer le message
+                        </button>
                     </form>
                 </div>
             </div>
@@ -247,12 +306,8 @@
                 </div>
                 <div class="footer-col">
                     <h4>Services</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Surveillance vidéo</a></li>
-                        <li><a href="#">Installation Starlink</a></li>
-                        <li><a href="#">Systèmes d'alarme</a></li>
-                        <li><a href="#">Contrôle d'accès</a></li>
-                        <li><a href="#">Vente d'équipements</a></li>
+                    <ul class="footer-links" id="footer-services">
+                        <!-- Services chargés dynamiquement -->
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -281,18 +336,20 @@
                 <div class="project-carousel">
                     <div class="project-carousel-slide active">
                         <img id="modal-image" src="" alt="Projet détaillé">
-                        <div class="project-carousel-caption" id="modal-caption">Image 1: Vue d'ensemble du système installé</div>
-                    </div>
-                    <div class="project-carousel-nav">
-                        <div class="project-carousel-dot active" data-slide="0"></div>
+                        <div class="project-carousel-caption" id="modal-caption"></div>
                     </div>
                 </div>
                 <div class="project-details">
-                    <h3 id="projectDetailTitle">Surveillance Résidentielle Premium</h3>
-                    <p id="projectDetailDescription">Installation complète d'un système de surveillance 4K avec détection intelligente pour une villa de luxe. Ce projet incluait 12 caméras haute définition, un système d'enregistrement centralisé et une application mobile pour le contrôle à distance.</p>
+                    <h3 id="projectDetailTitle"></h3>
+                    <p id="projectDetailDescription"></p>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner">
+        <div class="spinner"></div>
     </div>
 
     <script src="script.js"></script>
