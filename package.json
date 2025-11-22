@@ -1,7 +1,7 @@
 {
   "name": "rayz-website",
   "version": "1.0.0",
-  "description": "Site vitrine moderne pour Rayz.com avec administration et promotions",
+  "description": "Site vitrine moderne pour Rayz.com avec administration avancée",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -15,7 +15,9 @@
     "dotenv": "^16.3.1",
     "cors": "^2.8.5",
     "nodemailer": "^6.9.7",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
   },
   "engines": {
     "node": ">=18.0.0"
