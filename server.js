@@ -19,6 +19,12 @@ const PORT = process.env.PORT || 3000;
 // Configuration Supabase
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Variables Supabase manquantes dans .env');
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Middleware
@@ -50,23 +56,36 @@ const upload = multer({
 
 // Routes API
 
+// Route de santé
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Serveur fonctionnel' });
+});
+
 // Récupérer les données du site
 app.get('/api/site-data', async (req, res) => {
   try {
+    console.log('📡 Chargement des données du site...');
+    
     const { data: siteInfo, error: siteError } = await supabase
       .from('site_info')
       .select('*')
       .single();
+
+    if (siteError) console.error('Erreur site_info:', siteError);
 
     const { data: services, error: servicesError } = await supabase
       .from('services')
       .select('*')
       .order('order_index');
 
+    if (servicesError) console.error('Erreur services:', servicesError);
+
     const { data: projects, error: projectsError } = await supabase
       .from('projects')
       .select('*')
       .order('created_at', { ascending: false });
+
+    if (projectsError) console.error('Erreur projects:', projectsError);
 
     const { data: promotions, error: promotionsError } = await supabase
       .from('promotions')
@@ -74,13 +93,13 @@ app.get('/api/site-data', async (req, res) => {
       .eq('active', true)
       .order('start_date', { ascending: false });
 
+    if (promotionsError) console.error('Erreur promotions:', promotionsError);
+
     const { data: socialLinks, error: socialError } = await supabase
       .from('social_links')
       .select('*');
 
-    if (siteError || servicesError || projectsError || promotionsError || socialError) {
-      throw new Error('Erreur lors de la récupération des données');
-    }
+    if (socialError) console.error('Erreur social_links:', socialError);
 
     res.json({
       siteInfo: siteInfo || {},
@@ -90,8 +109,11 @@ app.get('/api/site-data', async (req, res) => {
       socialLinks: socialLinks || []
     });
   } catch (error) {
-    console.error('Erreur API site-data:', error);
-    res.status(500).json({ error: error.message });
+    console.error('❌ Erreur API site-data:', error);
+    res.status(500).json({ 
+      error: 'Erreur serveur',
+      details: error.message 
+    });
   }
 });
 
@@ -107,9 +129,12 @@ app.post('/api/update-site-info', async (req, res) => {
 
     if (error) throw error;
 
-    res.json({ message: 'Informations du site mises à jour avec succès', data: data[0] });
+    res.json({ 
+      message: 'Informations du site mises à jour avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
-    console.error('Erreur update site-info:', error);
+    console.error('❌ Erreur update site-info:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -136,11 +161,22 @@ app.post('/api/services', upload.single('image'), async (req, res) => {
 
     const { data, error } = await supabase
       .from('services')
-      .insert([{ title, description, icon, image, promotion_id, discount }])
+      .insert([{ 
+        title, 
+        description, 
+        icon, 
+        image, 
+        promotion_id: promotion_id || null, 
+        discount: discount || null 
+      }])
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Service ajouté avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Service ajouté avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -150,7 +186,13 @@ app.put('/api/services/:id', upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, icon, promotion_id, discount } = req.body;
-    let updates = { title, description, icon, promotion_id, discount };
+    let updates = { 
+      title, 
+      description, 
+      icon, 
+      promotion_id: promotion_id || null, 
+      discount: discount || null 
+    };
 
     if (req.file) {
       updates.image = `/uploads/${req.file.filename}`;
@@ -163,7 +205,11 @@ app.put('/api/services/:id', upload.single('image'), async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Service modifié avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Service modifié avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -172,9 +218,13 @@ app.put('/api/services/:id', upload.single('image'), async (req, res) => {
 app.delete('/api/services/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { error } = await supabase.from('services').delete().eq('id', id);
+    const { error } = await supabase
+      .from('services')
+      .delete()
+      .eq('id', id);
 
     if (error) throw error;
+    
     res.json({ message: 'Service supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -193,7 +243,11 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Projet ajouté avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Projet ajouté avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -216,7 +270,11 @@ app.put('/api/projects/:id', upload.single('image'), async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Projet modifié avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Projet modifié avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -225,9 +283,13 @@ app.put('/api/projects/:id', upload.single('image'), async (req, res) => {
 app.delete('/api/projects/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { error } = await supabase.from('projects').delete().eq('id', id);
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', id);
 
     if (error) throw error;
+    
     res.json({ message: 'Projet supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -256,11 +318,24 @@ app.post('/api/promotions', upload.single('banner_image'), async (req, res) => {
 
     const { data, error } = await supabase
       .from('promotions')
-      .insert([{ name, description, start_date, end_date, active, animation_class, discount_text, banner_image }])
+      .insert([{ 
+        name, 
+        description, 
+        start_date, 
+        end_date, 
+        active: active === 'true', 
+        animation_class, 
+        discount_text, 
+        banner_image 
+      }])
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Promotion ajoutée avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Promotion ajoutée avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -270,7 +345,15 @@ app.put('/api/promotions/:id', upload.single('banner_image'), async (req, res) =
   try {
     const { id } = req.params;
     const { name, description, start_date, end_date, active, animation_class, discount_text } = req.body;
-    let updates = { name, description, start_date, end_date, active, animation_class, discount_text };
+    let updates = { 
+      name, 
+      description, 
+      start_date, 
+      end_date, 
+      active: active === 'true', 
+      animation_class, 
+      discount_text 
+    };
 
     if (req.file) {
       updates.banner_image = `/uploads/${req.file.filename}`;
@@ -283,7 +366,11 @@ app.put('/api/promotions/:id', upload.single('banner_image'), async (req, res) =
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Promotion modifiée avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Promotion modifiée avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -292,9 +379,13 @@ app.put('/api/promotions/:id', upload.single('banner_image'), async (req, res) =
 app.delete('/api/promotions/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { error } = await supabase.from('promotions').delete().eq('id', id);
+    const { error } = await supabase
+      .from('promotions')
+      .delete()
+      .eq('id', id);
 
     if (error) throw error;
+    
     res.json({ message: 'Promotion supprimée avec succès' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -302,6 +393,19 @@ app.delete('/api/promotions/:id', async (req, res) => {
 });
 
 // Gérer les liens sociaux
+app.get('/api/social-links', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('social_links')
+      .select('*');
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/social-links', async (req, res) => {
   try {
     const { platform, url } = req.body;
@@ -312,7 +416,11 @@ app.post('/api/social-links', async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Lien social ajouté avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Lien social ajouté avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -330,7 +438,11 @@ app.put('/api/social-links/:id', async (req, res) => {
       .select();
 
     if (error) throw error;
-    res.json({ message: 'Lien social modifié avec succès', data: data[0] });
+    
+    res.json({ 
+      message: 'Lien social modifié avec succès', 
+      data: data[0] 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -339,9 +451,13 @@ app.put('/api/social-links/:id', async (req, res) => {
 app.delete('/api/social-links/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { error } = await supabase.from('social_links').delete().eq('id', id);
+    const { error } = await supabase
+      .from('social_links')
+      .delete()
+      .eq('id', id);
 
     if (error) throw error;
+    
     res.json({ message: 'Lien social supprimé avec succès' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -353,9 +469,11 @@ app.post('/api/send-email', async (req, res) => {
   try {
     const { name, email, phone, service, message } = req.body;
 
-    // Configuration du transporteur nodemailer
+    // Configuration simple pour Render (sans authentification SMTP)
     const transporter = nodemailer.createTransporter({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD
@@ -378,10 +496,14 @@ app.post('/api/send-email', async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
+    
     res.json({ message: 'Email envoyé avec succès' });
   } catch (error) {
-    console.error('Erreur envoi email:', error);
-    res.status(500).json({ error: 'Erreur lors de l\'envoi de l\'email' });
+    console.error('❌ Erreur envoi email:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de l\'envoi de l\'email',
+      details: error.message 
+    });
   }
 });
 
@@ -395,9 +517,23 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Gestion des erreurs 404 pour les routes API
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: 'Route API non trouvée' });
+});
+
 // Démarrer le serveur
 app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
-  console.log(`Site principal: http://localhost:${PORT}`);
-  console.log(`Administration: http://localhost:${PORT}/admin`);
+  console.log('🚀 Serveur Rayz.com démarré');
+  console.log(`📍 Port: ${PORT}`);
+  console.log(`🌐 Site: http://localhost:${PORT}`);
+  console.log(`⚙️  Admin: http://localhost:${PORT}/admin`);
+  console.log(`🔍 API Health: http://localhost:${PORT}/api/health`);
+  
+  // Vérification des variables d'environnement
+  console.log('\n🔧 Configuration:');
+  console.log(`✅ Supabase URL: ${supabaseUrl ? 'Configuré' : 'Manquant'}`);
+  console.log(`✅ Supabase Key: ${supabaseKey ? 'Configuré' : 'Manquant'}`);
+  console.log(`✅ Email: ${process.env.EMAIL_USER ? 'Configuré' : 'Manquant'}`);
+  console.log(`✅ WhatsApp: ${process.env.WHATSAPP_NUMBER ? 'Configuré' : 'Manquant'}`);
 });
