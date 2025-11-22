@@ -3,358 +3,441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration - Rayz.com</title>
+    <title>RAY-Z ENTREPRISE SARL - Solutions de Sécurité Innovantes</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230096D6'/><circle cx='50' cy='50' r='30' fill='white'/><path d='M40 40L60 50L40 60Z' fill='%230096D6'/></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="admin-body">
-    <div class="admin-panel">
-        <div class="admin-container">
-            <div class="admin-header">
-                <h1><i class="fas fa-cogs"></i> Administration Rayz.com</h1>
-                <p>Gérez l'ensemble du contenu de votre site web</p>
-            </div>
-
-            <div class="admin-tabs">
-                <button class="admin-tab active" data-tab="site-info">Informations du Site</button>
-                <button class="admin-tab" data-tab="services">Services</button>
-                <button class="admin-tab" data-tab="projects">Projets</button>
-                <button class="admin-tab" data-tab="promotions">Promotions</button>
-                <button class="admin-tab" data-tab="social">Réseaux Sociaux</button>
-            </div>
-
-            <div id="alerts-container"></div>
-
-            <!-- Informations du Site -->
-            <div class="admin-tab-content active" id="site-info-content">
-                <h2><i class="fas fa-info-circle"></i> Informations Générales du Site</h2>
-                <form id="site-info-form" class="admin-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="company_name">Nom de l'entreprise</label>
-                            <input type="text" id="company_name" name="company_name" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email de contact</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="phone">Téléphone</label>
-                            <input type="tel" id="phone" name="phone" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="whatsapp_number">Numéro WhatsApp</label>
-                            <input type="tel" id="whatsapp_number" name="whatsapp_number" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="address">Adresse</label>
-                        <textarea id="address" name="address" class="form-control" rows="2"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="hero_title">Titre de la page d'accueil</label>
-                        <input type="text" id="hero_title" name="hero_title" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="hero_description">Description de la page d'accueil</label>
-                        <textarea id="hero_description" name="hero_description" class="form-control" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="about_description">Description À Propos</label>
-                        <textarea id="about_description" name="about_description" class="form-control" rows="4" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="footer_description">Description du pied de page</label>
-                        <textarea id="footer_description" name="footer_description" class="form-control" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="logo">Logo (URL ou fichier)</label>
-                            <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
-                            <input type="text" id="logo_url" name="logo_url" class="form-control" placeholder="Ou entrez une URL">
-                        </div>
-                        <div class="form-group">
-                            <label for="hero_image">Image Hero (URL ou fichier)</label>
-                            <input type="file" id="hero_image" name="hero_image" class="form-control" accept="image/*">
-                            <input type="text" id="hero_image_url" name="hero_image_url" class="form-control" placeholder="Ou entrez une URL">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="about_image">Image À Propos (URL ou fichier)</label>
-                        <input type="file" id="about_image" name="about_image" class="form-control" accept="image/*">
-                        <input type="text" id="about_image_url" name="about_image_url" class="form-control" placeholder="Ou entrez une URL">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group checkbox-group">
-                            <input type="checkbox" id="maintenance_mode" name="maintenance_mode">
-                            <label for="maintenance_mode">Mode maintenance</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="maintenance_message">Message de maintenance</label>
-                        <textarea id="maintenance_message" name="maintenance_message" class="form-control" rows="2"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Enregistrer les modifications
-                    </button>
-                </form>
-            </div>
-
-            <!-- Services -->
-            <div class="admin-tab-content" id="services-content">
-                <div class="admin-section-header">
-                    <h2><i class="fas fa-concierge-bell"></i> Gestion des Services</h2>
-                    <button class="btn btn-primary" id="add-service-btn">
-                        <i class="fas fa-plus"></i> Ajouter un service
-                    </button>
-                </div>
-
-                <form id="service-form" class="admin-form" style="display: none;">
-                    <h3 id="service-form-title">Nouveau Service</h3>
-                    <input type="hidden" id="service_id" name="id">
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="service_title">Titre du service</label>
-                            <input type="text" id="service_title" name="title" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="service_icon">Icône (Font Awesome)</label>
-                            <input type="text" id="service_icon" name="icon" class="form-control" placeholder="fas fa-cog" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="service_description">Description</label>
-                        <textarea id="service_description" name="description" class="form-control" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="service_image">Image (fichier)</label>
-                            <input type="file" id="service_image" name="image" class="form-control" accept="image/*">
-                        </div>
-                        <div class="form-group">
-                            <label for="service_discount">Texte de réduction</label>
-                            <input type="text" id="service_discount" name="discount" class="form-control" placeholder="-20% jusqu'au 31/12">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="service_promotion">Promotion associée</label>
-                        <select id="service_promotion" name="promotion_id" class="form-control">
-                            <option value="">Aucune promotion</option>
-                        </select>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Enregistrer
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="cancel-service-btn">
-                            <i class="fas fa-times"></i> Annuler
-                        </button>
-                    </div>
-                </form>
-
-                <div class="services-list" id="services-list">
-                    <!-- Les services seront chargés ici -->
-                </div>
-            </div>
-
-            <!-- Projets -->
-            <div class="admin-tab-content" id="projects-content">
-                <div class="admin-section-header">
-                    <h2><i class="fas fa-project-diagram"></i> Gestion des Projets</h2>
-                    <button class="btn btn-primary" id="add-project-btn">
-                        <i class="fas fa-plus"></i> Ajouter un projet
-                    </button>
-                </div>
-
-                <form id="project-form" class="admin-form" style="display: none;">
-                    <h3 id="project-form-title">Nouveau Projet</h3>
-                    <input type="hidden" id="project_id" name="id">
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="project_title">Titre du projet</label>
-                            <input type="text" id="project_title" name="title" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="project_category">Catégorie</label>
-                            <select id="project_category" name="category" class="form-control" required>
-                                <option value="surveillance">Surveillance</option>
-                                <option value="starlink">Starlink</option>
-                                <option value="alarmes">Alarmes</option>
-                                <option value="controle">Contrôle d'accès</option>
-                                <option value="autres">Autres</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="project_description">Description</label>
-                        <textarea id="project_description" name="description" class="form-control" rows="4" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="project_image">Image (fichier)</label>
-                        <input type="file" id="project_image" name="image" class="form-control" accept="image/*" required>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Enregistrer
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="cancel-project-btn">
-                            <i class="fas fa-times"></i> Annuler
-                        </button>
-                    </div>
-                </form>
-
-                <div class="projects-list" id="projects-list">
-                    <!-- Les projets seront chargés ici -->
-                </div>
-            </div>
-
-            <!-- Promotions -->
-            <div class="admin-tab-content" id="promotions-content">
-                <div class="admin-section-header">
-                    <h2><i class="fas fa-tags"></i> Gestion des Promotions</h2>
-                    <button class="btn btn-primary" id="add-promotion-btn">
-                        <i class="fas fa-plus"></i> Ajouter une promotion
-                    </button>
-                </div>
-
-                <form id="promotion-form" class="admin-form" style="display: none;">
-                    <h3 id="promotion-form-title">Nouvelle Promotion</h3>
-                    <input type="hidden" id="promotion_id" name="id">
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="promotion_name">Nom de la promotion</label>
-                            <input type="text" id="promotion_name" name="name" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="promotion_animation">Animation</label>
-                            <select id="promotion_animation" name="animation_class" class="form-control">
-                                <option value="">Aucune animation</option>
-                                <option value="christmas-promotion">Noël</option>
-                                <option value="black-friday-promotion">Black Friday</option>
-                                <option value="womens-day-promotion">8 Mars</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="promotion_description">Description</label>
-                        <textarea id="promotion_description" name="description" class="form-control" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="promotion_start">Date de début</label>
-                            <input type="datetime-local" id="promotion_start" name="start_date" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="promotion_end">Date de fin</label>
-                            <input type="datetime-local" id="promotion_end" name="end_date" class="form-control" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="promotion_discount">Texte de réduction</label>
-                            <input type="text" id="promotion_discount" name="discount_text" class="form-control" placeholder="Jusqu'à -50%">
-                        </div>
-                        <div class="form-group checkbox-group">
-                            <input type="checkbox" id="promotion_active" name="active" checked>
-                            <label for="promotion_active">Promotion active</label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="promotion_banner">Bannière (fichier)</label>
-                        <input type="file" id="promotion_banner" name="banner_image" class="form-control" accept="image/*">
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Enregistrer
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="cancel-promotion-btn">
-                            <i class="fas fa-times"></i> Annuler
-                        </button>
-                    </div>
-                </form>
-
-                <div class="promotions-list" id="promotions-list">
-                    <!-- Les promotions seront chargées ici -->
-                </div>
-            </div>
-
-            <!-- Réseaux Sociaux -->
-            <div class="admin-tab-content" id="social-content">
-                <div class="admin-section-header">
-                    <h2><i class="fas fa-share-alt"></i> Gestion des Réseaux Sociaux</h2>
-                    <button class="btn btn-primary" id="add-social-btn">
-                        <i class="fas fa-plus"></i> Ajouter un réseau
-                    </button>
-                </div>
-
-                <form id="social-form" class="admin-form" style="display: none;">
-                    <h3 id="social-form-title">Nouveau Réseau Social</h3>
-                    <input type="hidden" id="social_id" name="id">
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="social_platform">Plateforme</label>
-                            <select id="social_platform" name="platform" class="form-control" required>
-                                <option value="facebook">Facebook</option>
-                                <option value="twitter">Twitter</option>
-                                <option value="instagram">Instagram</option>
-                                <option value="linkedin">LinkedIn</option>
-                                <option value="youtube">YouTube</option>
-                                <option value="whatsapp">WhatsApp</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="social_url">URL</label>
-                            <input type="url" id="social_url" name="url" class="form-control" required>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Enregistrer
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="cancel-social-btn">
-                            <i class="fas fa-times"></i> Annuler
-                        </button>
-                    </div>
-                </form>
-
-                <div class="social-list" id="social-list">
-                    <!-- Les réseaux sociaux seront chargés ici -->
-                </div>
+<body>
+    <!-- Bannière de Promotion -->
+    <div id="promotion-banner" class="promotion-banner" style="display: none;">
+        <div class="container">
+            <div class="promotion-content">
+                <span class="promotion-badge" id="promotion-badge">PROMOTION</span>
+                <span id="promotion-text" class="promotion-text"></span>
+                <button id="promotion-close" class="promotion-close">&times;</button>
             </div>
         </div>
     </div>
 
-    <script src="admin.js"></script>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1 id="site-name">RAY-Z</h1>
+                        <span>ENTREPRISE SARL</span>
+                    </div>
+                </div>
+                
+                <div class="mobile-toggle" id="mobile-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <nav id="nav">
+                    <ul>
+                        <li><a href="#home" class="nav-link active">Accueil</a></li>
+                        <li><a href="#services" class="nav-link">Services</a></li>
+                        <li><a href="#projects" class="nav-link">Projets</a></li>
+                        <li><a href="#about" class="nav-link">À Propos</a></li>
+                        <li><a href="#contact" class="nav-link">Contact</a></li>
+                        <li><a href="/admin" class="admin-link">Espace Pro</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-background">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 id="hero-title">Solutions de Sécurité <span class="highlight">Innovantes</span></h1>
+                    <p id="hero-description">Votre partenaire de confiance pour l'installation de systèmes de surveillance modernes, Starlink, alarmes et solutions de sécurité complètes.</p>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Projets Réalisés</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">98%</div>
+                            <div class="stat-label">Clients Satisfaits</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Support</div>
+                        </div>
+                    </div>
+                    <div class="hero-buttons">
+                        <a href="#contact" class="btn btn-primary">
+                            <i class="fas fa-phone"></i> Demander un Devis
+                        </a>
+                        <a href="#projects" class="btn btn-secondary">
+                            <i class="fas fa-eye"></i> Voir nos Projets
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="floating-card security">
+                        <i class="fas fa-camera"></i>
+                        <span>Surveillance 4K</span>
+                    </div>
+                    <div class="floating-card starlink">
+                        <i class="fas fa-satellite-dish"></i>
+                        <span>Internet Starlink</span>
+                    </div>
+                    <div class="floating-card alarm">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Alarmes Intelligentes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section services" id="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nos Services <span class="highlight">Premium</span></h2>
+                <p>Découvrez notre gamme complète de solutions de sécurité et connectivité haut de gamme</p>
+            </div>
+            <div class="services-grid" id="services-grid">
+                <!-- Les services seront chargés dynamiquement -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotion Spéciale -->
+    <section class="promotion-section" id="special-promotion" style="display: none;">
+        <div class="container">
+            <div class="promotion-content">
+                <div class="promotion-text">
+                    <h3 id="promotion-title">Promotion Spéciale</h3>
+                    <p id="promotion-description"></p>
+                    <div class="promotion-timer" id="promotion-timer">
+                        <div class="timer-item">
+                            <span class="timer-number">00</span>
+                            <span class="timer-label">Jours</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-number">00</span>
+                            <span class="timer-label">Heures</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-number">00</span>
+                            <span class="timer-label">Minutes</span>
+                        </div>
+                        <div class="timer-item">
+                            <span class="timer-number">00</span>
+                            <span class="timer-label">Secondes</span>
+                        </div>
+                    </div>
+                    <a href="#contact" class="btn btn-promo">
+                        <i class="fas fa-gift"></i> Profiter de l'Offre
+                    </a>
+                </div>
+                <div class="promotion-visual">
+                    <div class="promotion-badge">LIMITÉ</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="section projects" id="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2>Nos <span class="highlight">Réalisations</span></h2>
+                <p>Découvrez nos projets récents et laissez-vous inspirer par notre expertise</p>
+            </div>
+            <div class="projects-filter">
+                <button class="filter-btn active" data-filter="all">Tous les Projets</button>
+                <button class="filter-btn" data-filter="surveillance">Surveillance</button>
+                <button class="filter-btn" data-filter="starlink">Starlink</button>
+                <button class="filter-btn" data-filter="alarmes">Alarmes</button>
+                <button class="filter-btn" data-filter="residentiel">Résidentiel</button>
+                <button class="filter-btn" data-filter="commercial">Commercial</button>
+            </div>
+            <div class="projects-grid" id="projects-grid">
+                <!-- Les projets seront chargés dynamiquement -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Notre <span class="highlight">Histoire</span></h2>
+                    <div class="about-description">
+                        <p id="about-main-description">Fondée en 2018 et située à Douala Logpom, <strong>RAY-Z ENTREPRISE SARL</strong> est devenue un leader dans le domaine des solutions de sécurité et de connectivité innovantes.</p>
+                        <p id="about-history">Notre histoire commence par une vision simple : rendre la sécurité accessible à tous. Aujourd'hui, nous avons réalisé plus de 500 projets et maintenons un taux de satisfaction client de 98%.</p>
+                    </div>
+                    
+                    <div class="company-info">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>Localisation</h4>
+                                <p id="company-address">Douala Logpom, Cameroun</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>Téléphone</h4>
+                                <p id="company-phone">+237 6XX XXX XXX</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p id="company-email">contact@rayz.com</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <i class="fas fa-medal"></i>
+                            <h4>Expertise Certifiée</h4>
+                            <p>Équipe de techniciens certifiés avec plus de 10 ans d'expérience</p>
+                        </div>
+                        <div class="value-card">
+                            <i class="fas fa-clock"></i>
+                            <h4>Support 24/7</h4>
+                            <p>Assistance technique disponible 24 heures sur 24, 7 jours sur 7</p>
+                        </div>
+                        <div class="value-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h4>Garantie Étendue</h4>
+                            <p>Garantie jusqu'à 3 ans sur nos installations et équipements</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-visual">
+                    <div class="location-card">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h4>Zone d'Intervention</h4>
+                        <p>Douala et ses environs</p>
+                        <a href="#" id="location-map" class="btn btn-outline">
+                            <i class="fas fa-directions"></i> Voir sur la carte
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Contactez-<span class="highlight">Nous</span></h2>
+                <p>Prêt à sécuriser votre espace? Notre équipe d'experts vous accompagne</p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Discutons de votre projet</h3>
+                    <p>Notre équipe est disponible pour répondre à toutes vos questions et vous proposer la solution adaptée à vos besoins.</p>
+                    
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="method-info">
+                                <h4>Appelez-nous</h4>
+                                <p id="contact-phone">+237 6XX XXX XXX</p>
+                                <span>Lun - Ven: 8h00 - 18h00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <i class="fab fa-whatsapp"></i>
+                            </div>
+                            <div class="method-info">
+                                <h4>WhatsApp</h4>
+                                <p>Contact rapide</p>
+                                <a href="#" id="whatsapp-link" class="whatsapp-btn">
+                                    <i class="fab fa-whatsapp"></i> Écrire sur WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="method-info">
+                                <h4>Bureau</h4>
+                                <p id="contact-address">Douala Logpom, Cameroun</p>
+                                <span>Sur rendez-vous</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links">
+                        <h4>Suivez-nous</h4>
+                        <div class="social-grid" id="social-links">
+                            <!-- Liens sociaux dynamiques -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form-container">
+                    <form id="contactForm" class="contact-form">
+                        <div class="form-header">
+                            <h3>Demande de Devis</h3>
+                            <p>Remplissez ce formulaire et nous vous recontacterons sous 24h</p>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Nom complet *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Téléphone</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="service">Service intéressé *</label>
+                                <select id="service" name="service" required>
+                                    <option value="">Sélectionnez un service</option>
+                                    <option value="surveillance">Surveillance Vidéo</option>
+                                    <option value="starlink">Installation Starlink</option>
+                                    <option value="alarmes">Systèmes d'Alarme</option>
+                                    <option value="controle">Contrôle d'Accès</option>
+                                    <option value="reseau">Réseaux Sécurisés</option>
+                                    <option value="autres">Autres</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Description de votre projet *</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Décrivez vos besoins en sécurité..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-paper-plane"></i> Envoyer la Demande
+                        </button>
+                        
+                        <div class="form-footer">
+                            <p><i class="fas fa-lock"></i> Vos informations sont sécurisées et confidentielles</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="logo-text">
+                            <h3>RAY-Z</h3>
+                            <span>ENTREPRISE SARL</span>
+                        </div>
+                    </div>
+                    <p id="footer-description">Votre partenaire de confiance pour des solutions de sécurité innovantes et performantes à Douala et ses environs.</p>
+                    <div class="footer-social" id="footer-social">
+                        <!-- Liens sociaux dynamiques -->
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul class="footer-links" id="footer-services">
+                        <!-- Services dynamiques -->
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Entreprise</h4>
+                    <ul class="footer-links">
+                        <li><a href="#about">À Propos</a></li>
+                        <li><a href="#projects">Nos Projets</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="/admin">Espace Pro</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <div class="footer-contact">
+                        <p><i class="fas fa-map-marker-alt"></i> <span id="footer-address">Douala Logpom, Cameroun</span></p>
+                        <p><i class="fas fa-phone"></i> <span id="footer-phone">+237 6XX XXX XXX</span></p>
+                        <p><i class="fas fa-envelope"></i> <span id="footer-email">contact@rayz.com</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2024 <strong>RAY-Z ENTREPRISE SARL</strong>. Tous droits réservés.</p>
+                </div>
+                <div class="footer-links-bottom">
+                    <a href="#">Politique de confidentialité</a>
+                    <a href="#">Conditions d'utilisation</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Message Envoyé!</h3>
+            <p>Nous vous recontacterons dans les plus brefs délais.</p>
+            <button class="btn btn-primary" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // Initialisation EmailJS
+        (function() {
+            emailjs.init("4gEzT9DkXPjvp2WxD");
+        })();
+    </script>
+    <script src="script.js"></script>
 </body>
 </html>
